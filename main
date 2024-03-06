@@ -1,0 +1,45 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+
+# Generating random data
+data = np.random.randn(100)
+data_series = pd.Series(data)
+
+# Creating the box plot with seaborn for better aesthetics
+plt.figure(figsize=(10, 6))
+sns.boxplot(data=data_series, width=0.15)
+
+# Calculating statistics
+q1 = data_series.quantile(0.25)
+q3 = data_series.quantile(0.75)
+iqr = q3 - q1
+median = data_series.median()
+lower_fence = q1 - 1.5 * iqr
+upper_fence = q3 + 1.5 * iqr
+outliers = data_series[(data_series < lower_fence) | (data_series > upper_fence)]
+
+# Determine the plot's y-axis limits
+min_ylim = min(data_series.min(), lower_fence) - 1  # Adding some padding below the lowest point or lower fence
+max_ylim = max(data_series.max(), upper_fence) + 1  # Adding some padding above the highest point or upper fence
+plt.ylim(min_ylim, max_ylim)
+
+# Adding statistics annotations
+plt.text(x=0, y=median, s=f"Median: {median:.2f}", va='center', ha='center', backgroundcolor='w')
+plt.text(x=0, y=q1, s=f"Q1: {q1:.2f}", va='center', ha='center', backgroundcolor='w', fontsize=8)
+plt.text(x=0, y=q3, s=f"Q3: {q3:.2f}", va='center', ha='center', backgroundcolor='w', fontsize=8)
+plt.text(x=0, y=upper_fence, s=f"Upper: {upper_fence:.2f}", va='center', ha='center', backgroundcolor='w', fontsize=8)
+plt.text(x=0, y=lower_fence, s=f"Lower: {lower_fence:.2f}", va='center', ha='center', backgroundcolor='w', fontsize=8)
+
+# Highlight outliers with red color
+for outlier in outliers:
+    plt.text(x=0, y=outlier, s=f"{outlier:.2f}", va='center', ha='right', fontsize=8, color='red')
+
+# Adding title and labels
+plt.title('Box Plot with Detailed Statistics')
+plt.ylabel('Values')
+plt.xticks([])  # Hides x-axis ticks
+
+# Display the plot
+plt.show()
