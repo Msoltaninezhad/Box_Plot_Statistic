@@ -3,43 +3,41 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-# Generating random data
-data = np.random.randn(100)
-data_series = pd.Series(data)
+# Generating two sets of random numbers for data1 and data2
+np.random.seed(0)  # For reproducibility
+data1 = np.random.normal(loc=0, scale=1, size=100)  # 100 random numbers from a normal distribution centered at 0
+data2 = np.random.normal(loc=0.5, scale=1.5, size=100)  # 100 random numbers from a normal distribution centered at 0.5
+
+# Creating DataFrame
+df = pd.DataFrame({'data1': data1, 'data2': data2})
 
 # Creating the box plot with seaborn for better aesthetics
 plt.figure(figsize=(10, 6))
-sns.boxplot(data=data_series, width=0.15)
-
-# Calculating statistics
-q1 = data_series.quantile(0.25)
-q3 = data_series.quantile(0.75)
-iqr = q3 - q1
-median = data_series.median()
-lower_fence = q1 - 1.5 * iqr
-upper_fence = q3 + 1.5 * iqr
-outliers = data_series[(data_series < lower_fence) | (data_series > upper_fence)]
-
-# Determine the plot's y-axis limits
-min_ylim = min(data_series.min(), lower_fence) - 1  # Adding some padding below the lowest point or lower fence
-max_ylim = max(data_series.max(), upper_fence) + 1  # Adding some padding above the highest point or upper fence
-plt.ylim(min_ylim, max_ylim)
-
-# Adding statistics annotations
-plt.text(x=0, y=median, s=f"Median: {median:.2f}", va='center', ha='center', backgroundcolor='w')
-plt.text(x=0, y=q1, s=f"Q1: {q1:.2f}", va='center', ha='center', backgroundcolor='w', fontsize=8)
-plt.text(x=0, y=q3, s=f"Q3: {q3:.2f}", va='center', ha='center', backgroundcolor='w', fontsize=8)
-plt.text(x=0, y=upper_fence, s=f"Upper: {upper_fence:.2f}", va='center', ha='center', backgroundcolor='w', fontsize=8)
-plt.text(x=0, y=lower_fence, s=f"Lower: {lower_fence:.2f}", va='center', ha='center', backgroundcolor='w', fontsize=8)
-
-# Highlight outliers with red color
-for outlier in outliers:
-    plt.text(x=0, y=outlier, s=f"{outlier:.2f}", va='center', ha='right', fontsize=8, color='red')
-
-# Adding title and labels
-plt.title('Box Plot with Detailed Statistics')
+sns.boxplot(data=df, width=0.5)
+plt.title('Box Plot for data1 and data2')
 plt.ylabel('Values')
-plt.xticks([])  # Hides x-axis ticks
-
-# Display the plot
 plt.show()
+
+# Printing statistics for both datasets
+for column in df.columns:
+    data_series = df[column]
+    q1 = data_series.quantile(0.25)
+    q3 = data_series.quantile(0.75)
+    iqr = q3 - q1
+    median = data_series.median()
+    lower_fence = q1 - 1.5 * iqr
+    upper_fence = q3 + 1.5 * iqr
+    outliers = data_series[(data_series < lower_fence) | (data_series > upper_fence)]
+
+    print(f"Statistics for {column}:")
+    print(f"Median: {median:.2f}")
+    print(f"First Quartile (Q1): {q1:.2f}")
+    print(f"Third Quartile (Q3): {q3:.2f}")
+    print(f"Interquartile Range (IQR): {iqr:.2f}")
+    print(f"Lower Fence: {lower_fence:.2f}")
+    print(f"Upper Fence: {upper_fence:.2f}")
+    if not outliers.empty:
+        print("Outliers:", outliers.values)
+    else:
+        print("Outliers: None")
+    print("\n")  # Add a newline for better readability between datasets
